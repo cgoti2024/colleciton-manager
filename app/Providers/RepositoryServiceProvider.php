@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repository\CollectionRepository;
+use App\Repository\CollectionRepositoryInterface;
 use App\Repository\OrderRepository;
 use App\Repository\ProductRepository;
 use App\Repository\WebhookRepository;
@@ -21,10 +23,9 @@ class RepositoryServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->bind(OrderRepositoryInterface::class, OrderRepository::class);
+        $this->app->bind(CollectionRepositoryInterface::class, CollectionRepository::class);
         $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
         $this->app->bind(WebhookRepositoryInterface::class, WebhookRepository::class);
-        $this->app->bind(CustomerRepositoryInterface::class, CustomerRepository::class);
     }
 
     /**

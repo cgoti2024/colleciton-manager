@@ -1,20 +1,19 @@
-<?php
-
-namespace App\Jobs;
+<?php namespace App\Jobs;
 
 use App\Models\User;
 use App\Models\Webhook;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Foundation\Queue\Queueable;
 
-class ProductsCreateJob implements ShouldQueue
+
+class ProductsDeleteJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-     /**
+    /**
      * Shop's myshopify domain
      *
      * @var string
@@ -59,8 +58,8 @@ class ProductsCreateJob implements ShouldQueue
         $shopifyId = json_decode($product)->id;
 
         $entity = Webhook::updateOrCreate(
-            ['shopify_id' => $shopifyId, 'topic' => 'products/create', 'shop_id' => $shop->id],
-            ['shopify_id' => $shopifyId, 'topic' => 'products/create', 'shop_id' => $shop->id, 'data' => $product, 'is_executed' => 0]
+            ['shopify_id' => $shopifyId, 'topic' => 'products/delete', 'shop_id' => $shop->id],
+            ['shopify_id' => $shopifyId, 'topic' => 'products/delete', 'shop_id' => $shop->id, 'data' => $product, 'is_executed' => 0]
         );
 
         ExecuteProductsJob::dispatch($entity->id);

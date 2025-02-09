@@ -2,8 +2,7 @@
 
 namespace App\Repository;
 
-use App\Models\Webhook;
-interface ProductRepositoryInterface
+interface CollectionRepositoryInterface
 {
     public function all();
 

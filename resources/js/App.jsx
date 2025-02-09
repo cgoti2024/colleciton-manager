@@ -65,8 +65,7 @@ const App = () => {
             <ui-nav-menu>
                 <a href="/" rel="home" onClick={(event) => handleNavigation(event, '/')}>App</a>
                 <a href="/products" onClick={(event) => handleNavigation(event, '/products')}>Products</a>
-                <a href="/orders" onClick={(event) => handleNavigation(event, '/orders')}>Orders</a>
-                <a href="/customers" onClick={(event) => handleNavigation(event, '/customers')}>Customers</a>
+                <a href="/collections" onClick={(event) => handleNavigation(event, '/collections')}>Collections</a>
             </ui-nav-menu>
             <ErrorBoundary FallbackComponent={ErrorFallback} onError={logError}>
                 {!loading && <Routes />}

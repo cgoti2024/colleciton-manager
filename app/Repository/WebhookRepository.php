@@ -14,29 +14,17 @@ use App\Models\Webhook;
 class WebhookRepository implements WebhookRepositoryInterface
 {
 
-    /**
-     * @var OrderRepositoryInterface
-     */
-    private $orderRepo;
-    
-    /**
-     * @var ProductRepositoryInterface
-     */
+    private $collectionRepo;
+
     private $productRepo;
 
-    /**
-     * @var CustomerRepositoryInterface 
-     */
-    private $customerRepo;
-
     public function __construct(
-        OrderRepositoryInterface $orderRepo,
         ProductRepositoryInterface $productRepo,
-        CustomerRepositoryInterface $customerRepo
+        CollectionRepositoryInterface $collectionRepo
+
     ) {
-        $this->orderRepo = $orderRepo;
         $this->productRepo = $productRepo;
-        $this->customerRepo = $customerRepo;
+        $this->collectionRepo = $collectionRepo;
     }
 
     /**
@@ -44,14 +32,17 @@ class WebhookRepository implements WebhookRepositoryInterface
      *
      * @return bool|mixed
      */
-    public function orderWebhook(Webhook $webhook)
+    public function collectionWebhook($webhook)
     {
         try {
             $payloadData = json_decode($webhook->data, 1);
             $shopId = $webhook->shop_id;
 
-            $order = $this->orderRepo->store($payloadData, $shopId);
-        
+            if ($webhook->topic === 'collections/delete') {
+                $this->collectionRepo->destroy($payloadData, $shopId);
+            } else {
+                $this->collectionRepo->store($payloadData, $shopId);
+            }
         } catch (Exception $exception) {
             Log::error($exception->getMessage() . ' while ExecuteOrderWebhookJob, Order Id:' . @$webhook->shopify_id);
         }
@@ -74,30 +65,16 @@ class WebhookRepository implements WebhookRepositoryInterface
         }
 
         try {
-            $product  = $this->productRepo->store($$payloadData, $shopId);
-           
+            if ($webhook->topic === 'products/delete') {
+                $this->productRepo->destroy($payloadData, $shopId);
+            } else {
+                $this->productRepo->store($payloadData, $shopId);
+            }
+
         } catch (Exception $exception) {
             Log::error($exception->getMessage() . ' while ExecuteProductWebhookJob, Product Id:' . @$webhook->shopify_id);
         }
 
         return true;
-    }
-
-    public function customerWebhook($webhook)
-    {
-        $payloadData = json_decode($webhook->data, 1);
-        $shopId = $webhook->shop_id;
-
-        $shop = $webhook->shop;
-        if (empty($shop)) {
-            return true;
-        }
-
-        try {
-            $product  = $this->productRepo->store($$payloadData, $shopId);
-           
-        } catch (Exception $exception) {
-            Log::error($exception->getMessage() . ' while ExecuteCustomerWebhookJob, Customer Id:' . @$webhook->shopify_id);
-        }
     }
 }

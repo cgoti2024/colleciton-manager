@@ -5,13 +5,13 @@ namespace App\Jobs;
 use App;
 use App\Models\Webhook;
 use App\Repository\WebhookRepositoryInterface;
-use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class ExecuteOrdersJob implements ShouldQueue
+class ExecuteCollectionsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -51,7 +51,7 @@ class ExecuteOrdersJob implements ShouldQueue
         /** @var WebhookRepositoryInterface $webhookRepo */
         $webhookRepo = App::make(WebhookRepositoryInterface::class);
 
-        $webhookRepo->orderWebhook($webhook);
+        $webhookRepo->collectionWebhook($webhook);
 
         $webhook->update(['is_executed' => 1]);
 

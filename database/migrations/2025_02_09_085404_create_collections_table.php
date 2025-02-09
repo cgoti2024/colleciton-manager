@@ -11,18 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('customers', function (Blueprint $table) {
+        Schema::create('collections', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('shopify_collection_id')->unique();
             $table->unsignedBigInteger('shop_id');
-            $table->string('shopify_customer_id');
-            $table->string('first_name');
-            $table->string('last_name')->nullable();
-            $table->string('email');
-            $table->string('phone')->nullable();
-            $table->integer('orders_count')->default(0);
-            $table->json('default_address')->nullable();
-            $table->timestamps();
+            $table->string('title');
+            $table->string('handle');
+            $table->string('status');
+            $table->dateTime('published_at')->nullable();
+            $table->integer('products_count')->default(0);
+            $table->string('collection_type');
+            $table->string('image_url')->nullable();
             $table->softDeletes();
+            $table->timestamps();
 
             $table->foreign('shop_id')->references('id')->on('users')->onDelete('CASCADE');
         });
@@ -33,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('customers');
+        Schema::dropIfExists('collections');
     }
 };

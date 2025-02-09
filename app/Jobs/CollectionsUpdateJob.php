@@ -1,20 +1,18 @@
-<?php
-
-namespace App\Jobs;
+<?php namespace App\Jobs;
 
 use App\Models\User;
 use App\Models\Webhook;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class OrdersCreateJob implements ShouldQueue
+class CollectionsUpdateJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-     /**
+    /**
      * Shop's myshopify domain
      *
      * @var string
@@ -28,21 +26,12 @@ class OrdersCreateJob implements ShouldQueue
      */
     public $data;
 
-    /**
-     * Create a new job instance.
-     *
-     * @param string   $shopDomain The shop's myshopify domain.
-     * @param $data       The webhook data (JSON decoded).
-     *
-     * @return void
-     */
     public function __construct($shopDomain, $data)
     {
         set_time_limit(0);
         $this->shopDomain = $shopDomain;
         $this->data = $data;
     }
-
 
     /**
      * Execute the job.
@@ -56,15 +45,15 @@ class OrdersCreateJob implements ShouldQueue
             return response(true, 200);
         }
 
-        $order = json_encode($this->data);
-        $shopifyId = json_decode($order)->id;
+        $collection = json_encode($this->data);
+        $shopifyId = json_decode($collection)->id;
 
         $entity = Webhook::updateOrCreate(
-            ['shopify_id' => $shopifyId, 'topic' => 'orders/create', 'shop_id' => $shop->id],
-            ['shopify_id' => $shopifyId, 'topic' => 'orders/create', 'shop_id' => $shop->id, 'data' => $order, 'is_executed' => 0]
+            ['shopify_id' => $shopifyId, 'topic' => 'collections/update', 'shop_id' => $shop->id],
+            ['shopify_id' => $shopifyId, 'topic' => 'collections/update', 'shop_id' => $shop->id, 'data' => $collection, 'is_executed' => 0]
         );
 
-        ExecuteOrdersJob::dispatch($entity->id);
+        ExecuteCollectionsJob::dispatch($entity->id);
 
         return response(true, 200);
     }

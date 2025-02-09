@@ -24,10 +24,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Webhook whereData($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Webhook whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Webhook whereIsExecuted($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Webhook whereShopId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Webhook whereShopifyId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Webhook whereTopic($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Webhook whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Webhook whereUserId($value)
  * @mixin \Eloquent
  */
 class Webhook extends Model

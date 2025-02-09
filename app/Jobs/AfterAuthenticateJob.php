@@ -33,11 +33,7 @@ class AfterAuthenticateJob implements ShouldQueue
             info('Shop not found --- : ' . $this->shopDomain);
             return;
         }
-        
-        SyncProductsJob::dispatch($shop);
-     
-        SyncOrdersJob::dispatch($shop);
 
-        SyncCustomersJob::dispatch($shop);
+        SyncProductsJob::dispatch($shop);
     }
 }

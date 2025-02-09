@@ -26,7 +26,7 @@ function Dashboard() {
     return (
         <Page>
             <Grid>
-                <Grid.Cell columnSpan={{xs: 6, sm: 3, md: 3, lg: 4, xl: 4}}>
+                <Grid.Cell columnSpan={{xs: 6, sm: 6, md: 6, lg: 6, xl: 6}}>
                     <CalloutCard
                         title="Products"
                         illustration="/images/box.png"
@@ -40,31 +40,17 @@ function Dashboard() {
                         </Text>
                     </CalloutCard>
                 </Grid.Cell>
-                <Grid.Cell columnSpan={{xs: 6, sm: 3, md: 3, lg: 4, xl: 4}}>
+                <Grid.Cell columnSpan={{xs: 6, sm: 6, md: 6, lg: 6, xl: 6}}>
                     <CalloutCard
-                        title="Orders"
+                        title="Collections"
                         illustration="/images/checklist.png"
                         primaryAction={{
                             content: 'Orders',
-                            onAction: (event) => handleNavigation(event, '/orders'),
+                            onAction: (event) => handleNavigation(event, '/collections'),
                         }}
                     >
                         <Text variant="headingMd" as="h1">
                             {items.orders}
-                        </Text>
-                    </CalloutCard>
-                </Grid.Cell>
-                <Grid.Cell columnSpan={{xs: 6, sm: 3, md: 3, lg: 4, xl: 4}}>
-                    <CalloutCard
-                        title="Customers"
-                        illustration="/images/customer.png"
-                        primaryAction={{
-                            content: 'Customers',
-                            onAction: (event) => handleNavigation(event, '/customers'),
-                        }}
-                    >
-                        <Text variant="headingMd" as="h1">
-                            {items.customers}
                         </Text>
                     </CalloutCard>
                 </Grid.Cell>

@@ -1,20 +1,20 @@
-<?php
-
-namespace App\Jobs;
+<?php namespace App\Jobs;
 
 use App\Models\User;
 use App\Models\Webhook;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Osiset\ShopifyApp\Objects\Values\ShopDomain;
+use stdClass;
 
-class ProductsCreateJob implements ShouldQueue
+class CollectionsCreateJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-     /**
+    /**
      * Shop's myshopify domain
      *
      * @var string
@@ -28,14 +28,6 @@ class ProductsCreateJob implements ShouldQueue
      */
     public $data;
 
-    /**
-     * Create a new job instance.
-     *
-     * @param string   $shopDomain The shop's myshopify domain.
-     * @param $data       The webhook data (JSON decoded).
-     *
-     * @return void
-     */
     public function __construct($shopDomain, $data)
     {
         set_time_limit(0);
@@ -55,15 +47,15 @@ class ProductsCreateJob implements ShouldQueue
             return response(true, 200);
         }
 
-        $product = json_encode($this->data);
-        $shopifyId = json_decode($product)->id;
+        $collection = json_encode($this->data);
+        $shopifyId = json_decode($collection)->id;
 
         $entity = Webhook::updateOrCreate(
-            ['shopify_id' => $shopifyId, 'topic' => 'products/create', 'shop_id' => $shop->id],
-            ['shopify_id' => $shopifyId, 'topic' => 'products/create', 'shop_id' => $shop->id, 'data' => $product, 'is_executed' => 0]
+            ['shopify_id' => $shopifyId, 'topic' => 'collections/create', 'shop_id' => $shop->id],
+            ['shopify_id' => $shopifyId, 'topic' => 'collections/create', 'shop_id' => $shop->id, 'data' => $collection, 'is_executed' => 0]
         );
 
-        ExecuteProductsJob::dispatch($entity->id);
+        ExecuteCollectionsJob::dispatch($entity->id);
 
         return response(true, 200);
     }

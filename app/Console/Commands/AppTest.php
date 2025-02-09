@@ -33,12 +33,6 @@ class AppTest extends Command
 
         $this->info('Products started sync...');
          SyncProductsJob::dispatchSync($shop);
-     
-         $this->info('Orders started sync...');
-         SyncOrdersJob::dispatchSync($shop);
-
-         $this->info('Customer started sync...');
-         SyncCustomersJob::dispatchSync($shop);
 
         dd('Data synced successfully..!!!');
     }

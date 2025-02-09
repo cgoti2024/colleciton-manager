@@ -16,12 +16,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string|null $title
  * @property int $position
  * @property float $price
- * @property int $compare_at_price
  * @property int|null $inventory_quantity
- * @property string|null $image_url
  * @property string|null $option1
  * @property string|null $option2
  * @property string|null $option3
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Product $product
@@ -29,11 +28,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant ofShop($shopId)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant query()
- * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant whereCompareAtPrice($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant whereImageUrl($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant whereInventoryQuantity($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant whereOption1($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant whereOption2($value)
@@ -45,6 +44,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant whereShopifyVariantId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant whereTitle($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|ProductVariant withoutTrashed()
  * @mixin \Eloquent
  */
 class ProductVariant extends Model

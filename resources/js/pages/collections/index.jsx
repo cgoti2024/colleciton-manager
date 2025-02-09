@@ -2,25 +2,29 @@ import {
     IndexTable,
     LegacyCard,
     Text,
+    Badge,
     useBreakpoints,
-    Page, Pagination, EmptyState
+    Page,
+    Thumbnail, useSetIndexFiltersMode, Pagination, EmptyState
 } from '@shopify/polaris';
 import React, {useEffect, useState} from "react";
+import moment from 'moment';
 
-function Customer() {
+function Table() {
     const [items, setItems] = useState([])
     const [loading, setLoading] = useState([])
     const [currentPage, setCurrentPage] = useState(1);
     const [pageInfo, setPageInfo] = useState(null);
 
     const resourceName = {
-        singular: 'Customer',
-        plural: 'Customers',
+        singular: 'Order',
+        plural: 'Orders',
     };
 
-    const getCustomer = async () => {
+    const getOrders = async () => {
         setLoading(true)
-        await axios.get('/api/customers?page='+currentPage).then((res) => {
+        await axios.get('/api/collections?page='+currentPage).then((res) => {
+            console.log(res, 'res')
             setItems(res.data.data)
             setCurrentPage(res.data.meta.current_page);
             setPageInfo(res.data.meta);
@@ -32,11 +36,11 @@ function Customer() {
     }
 
     useEffect(() => {
-        getCustomer();
+        getOrders();
     }, [])
 
     useEffect(() => {
-        getCustomer();
+        getOrders();
     }, [currentPage]);
 
     const handlePrevPage = () => {
@@ -60,25 +64,52 @@ function Customer() {
         return endIndex > (pageInfo?.total || 0) ? (pageInfo?.total || 0) : endIndex;
     };
 
+    const financialTone = (status) => {
+        switch (status) {
+            case 'paid': return 'success'
+            default: return ''
+        }
+    }
+
+    const fulfillmentTone = (status) => {
+        switch (status) {
+            case 'fulfilled': return 'success'
+            default: return ''
+        }
+    }
+
     const rowMarkup = items.map(
         (
-            {id, first_name, last_name, email, phone, orders_count},
+            {id, order_number, total_price, currency, customer_name, financial_status, fulfillment_status, order_items, order_date},
             index,
         ) => (
             <IndexTable.Row id={id} key={id + '-' + index} position={index}>
                 <IndexTable.Cell>
                     <Text variant="bodyMd" fontWeight="bold" as="span">
-                        {first_name} {last_name}
+                        #{order_number}
                     </Text>
                 </IndexTable.Cell>
                 <IndexTable.Cell>
-                    {email}
+                    {moment(order_date).format('MMM DD YYYY')}
                 </IndexTable.Cell>
                 <IndexTable.Cell>
-                    {phone}
+                    {customer_name}
                 </IndexTable.Cell>
                 <IndexTable.Cell>
-                    {orders_count}
+                    {total_price}
+                </IndexTable.Cell>
+                <IndexTable.Cell>
+                    {order_items}
+                </IndexTable.Cell>
+                <IndexTable.Cell>
+                    <Badge tone={financialTone(status)}>
+                        {financial_status}
+                    </Badge>
+                </IndexTable.Cell>
+                <IndexTable.Cell>
+                    <Badge tone={fulfillmentTone(status)}>
+                        {fulfillment_status}
+                    </Badge>
                 </IndexTable.Cell>
             </IndexTable.Row>
         ),
@@ -86,7 +117,7 @@ function Customer() {
 
     const emptyStateMarkup = (
         <EmptyState
-            heading={`No customer available`}
+            heading={`No orders available`}
         >
             <img src="/images/empty.jpg" alt="empty records" width={250}/>
         </EmptyState>
@@ -94,7 +125,7 @@ function Customer() {
 
     return (
         <Page
-            title="Customers"
+            title="Orders"
             fullWidth
         >
             <LegacyCard>
@@ -103,17 +134,19 @@ function Customer() {
                     resourceName={resourceName}
                     itemCount={items.length}
                     headings={[
+                        {title: 'Order'},
+                        {title: 'Date'},
                         {title: 'Customer'},
-                        {title: 'Email'},
-                        {title: 'Phone'},
-                        {title: 'Order count'},
+                        {title: 'Total'},
+                        {title: 'Items'},
+                        {title: 'Payment Status'},
+                        {title: 'Fulfillment Status'},
                     ]}
                     selectable={false}
                     emptyState={!loading && emptyStateMarkup}
                 >
                     {rowMarkup}
                 </IndexTable>
-
                 {
                     items.length ?
                     <Pagination
@@ -122,7 +155,7 @@ function Customer() {
                         type="table"
                         hasNext={currentPage < pageInfo?.last_page}
                         hasPrevious={currentPage > 1}
-                        label={`${getStartIndex()}-${getEndIndex()} of ${pageInfo?.total || 0} customers`}
+                        label={`${getStartIndex()}-${getEndIndex()} of ${pageInfo?.total || 0} orders`}
                     /> : ''
                 }
             </LegacyCard>
@@ -130,4 +163,4 @@ function Customer() {
     );
 }
 
-export default Customer;
+export default Table;

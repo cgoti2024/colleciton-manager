@@ -201,7 +201,7 @@ return [
     |
     */
 
-    'api_scopes' => env('SHOPIFY_API_SCOPES', 'read_products,read_orders, read_customers, read_orders'),
+    'api_scopes' => env('SHOPIFY_API_SCOPES', 'read_products, write_products, read_orders, read_customers, read_orders'),
 
     /*
     |--------------------------------------------------------------------------
@@ -382,14 +382,6 @@ return [
 
     'webhooks' => [
             [
-                'topic' => 'ORDERS_CREATE',
-                'address' => env('WEBHOOK_URL').'/webhook/orders-create'
-            ],
-            [
-                'topic' => 'ORDERS_UPDATED',
-                'address' => env('WEBHOOK_URL').'/webhook/orders-updated'
-            ],
-            [
                 'topic' => 'PRODUCTS_CREATE',
                 'address' => env('WEBHOOK_URL').'/webhook/products-create'
             ],
@@ -398,12 +390,20 @@ return [
                 'address' => env('WEBHOOK_URL').'/webhook/products-update'
             ],
             [
-                'topic' => 'CUSTOMERS_UPDATE',
-                'address' => env('WEBHOOK_URL').'/webhook/customers-update'
+                'topic' => 'PRODUCTS_DELETE',
+                'address' => env('WEBHOOK_URL').'/webhook/products-delete'
             ],
             [
-                'topic' => 'CUSTOMERS_CREATE',
-                'address' => env('WEBHOOK_URL').'/webhook/customers-create'
+                'topic' => 'COLLECTIONS_CREATE',
+                'address' => env('WEBHOOK_URL').'/webhook/collections-create'
+            ],
+            [
+                'topic' => 'COLLECTIONS_UPDATE',
+                'address' => env('WEBHOOK_URL').'/webhook/collections-update'
+            ],
+            [
+                'topic' => 'COLLECTIONS_DELETE',
+                'address' => env('WEBHOOK_URL').'/webhook/collections-delete'
             ],
         ],
 

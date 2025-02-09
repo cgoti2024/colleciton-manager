@@ -34,7 +34,8 @@ class CollectionRepository implements CollectionRepositoryInterface
         return true;
     }
 
-    public function destroy($payloadData, $shopId) {
+    public function destroy($payloadData, $shopId)
+    {
         $collectionId = @$payloadData['id'];
         if ($collectionId) {
             Collection::where('shop_id', $shopId)->where('shopify_collection_id', $collectionId)->delete();

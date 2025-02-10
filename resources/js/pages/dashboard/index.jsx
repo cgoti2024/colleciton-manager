@@ -1,4 +1,4 @@
-import {CalloutCard, Page, Text, Grid, LegacyCard} from '@shopify/polaris';
+import {CalloutCard, Page, Text, Grid, LegacyCard,ProgressBar} from '@shopify/polaris';
 import React, {useEffect, useState} from 'react';
 import {useNavigate} from "react-router-dom";
 
@@ -88,6 +88,7 @@ function Dashboard() {
                             onAction: handleSyncClick,
                         }}
                     >
+                        {isSyncing && <ProgressBar progress={70} tone="success" size="small" />}
                     </CalloutCard>
                 </Grid.Cell>
             </Grid>

@@ -5,9 +5,20 @@ import {
     Badge,
     useBreakpoints,
     Page,
-    Thumbnail, useSetIndexFiltersMode, Pagination, EmptyState, InlineStack,useIndexResourceState,TextField,Icon,Button,Select
+    Thumbnail,
+    useSetIndexFiltersMode,
+    Pagination,
+    EmptyState,
+    InlineStack,
+    useIndexResourceState,
+    TextField,
+    Icon,
+    Button,
+    Select,
+    Modal,
+    TextContainer
 } from '@shopify/polaris';
-import React, {useEffect, useState,useCallback} from "react";
+import React, {useEffect, useState, useCallback} from "react";
 import {
     SearchIcon
 } from '@shopify/polaris-icons';
@@ -19,19 +30,29 @@ function Table() {
     const [pageInfo, setPageInfo] = useState(null);
     const [textFieldValue, setTextFieldValue] = useState(null);
     const [selected, setSelected] = useState('newestUpdate');
+    const [active, setActive] = useState(true);
+    const [newCollection, setNewCollection] = useState({
+        title: '',
+        description: '',
+        image: '',
+        products: []
+    });
 
-    const handleSelectChange = (value)=> {
+
+    const handleChange = () => setActive(!active);
+
+    const handleSelectChange = (value) => {
         setSelected(value)
     };
-    const handleTextFieldChange = (value)=>{
+    const handleTextFieldChange = (value) => {
         setTextFieldValue(value)
     }
 
     const options = [
-        {label: 'Title', value: 'title'},
-        {label: 'Supplier', value: 'supplier'},
-        {label: 'Tags', value: 'tags'},
-        {label: 'All', value: 'all'},
+        { label: 'Title', value: 'title' },
+        { label: 'Supplier', value: 'supplier' },
+        { label: 'Tags', value: 'tags' },
+        { label: 'All', value: 'all' },
     ];
 
     const resourceName = {
@@ -41,7 +62,7 @@ function Table() {
 
     const getProducts = async () => {
         setLoading(true)
-        await axios.get('/api/products?page='+currentPage+'&search='+textFieldValue+'&type='+selected).then((res) => {
+        await axios.get('/api/products?page=' + currentPage + '&search=' + textFieldValue + '&type=' + selected).then((res) => {
             console.log(res, 'res')
             setItems(res.data.data)
             setCurrentPage(res.data.meta.current_page);
@@ -59,7 +80,7 @@ function Table() {
 
     useEffect(() => {
         getProducts();  // Fetch the products after currentPage is updated
-    }, [currentPage],textFieldValue);
+    }, [currentPage], textFieldValue);
 
     const handlePrevPage = () => {
         if (currentPage > 1) {
@@ -82,8 +103,9 @@ function Table() {
         return endIndex > (pageInfo?.total || 0) ? (pageInfo?.total || 0) : endIndex;
     };
 
-    const {selectedResources, allResourcesSelected, handleSelectionChange} =
+    const { selectedResources, allResourcesSelected, handleSelectionChange } =
         useIndexResourceState(items);
+
     const promotedBulkActions = [
         {
             content: 'Selected items',
@@ -97,9 +119,16 @@ function Table() {
         getProducts();
     };
 
+    const handleCollectionChange = (key, value) => {
+        setNewCollection((prev) => ({
+            ...prev,
+            [key]: value
+        }));
+    };
+
     const rowMarkup = items.map(
         (
-            {id, title, status, image_url, first_variant, supplier },
+            { id, title, status, image_url, first_variant, supplier },
             index,
         ) => (
             <IndexTable.Row id={id} key={id} selected={selectedResources.includes(id)} position={index}>
@@ -138,26 +167,54 @@ function Table() {
             title="Products"
             fullWidth
         >
+            <div style={{ "margin": "10px 0", "display": "flex", "justifyContent": "end" }}>
+                <Button onClick={handleChange}>Create Manual Collection</Button>
+            </div>
+            <Modal
+                open={active}
+                onClose={handleChange}
+                primaryAction={{
+                    content: 'Add Instagram',
+                    onAction: handleChange,
+                }}
+                title="Create Manual Collection"
+                secondaryActions={[
+                    {
+                        content: 'Learn more',
+                        onAction: handleChange,
+                    },
+                ]}
+            >
+                <Modal.Section>
+                    <TextField
+                        label="Store name"
+                        value={newCollection.title}
+                        onChange={handleCollectionChange}
+                        autoComplete="off"
+                    />
+
+                </Modal.Section>
+            </Modal>
             <LegacyCard>
-                <div  style={{"padding":"10px"}}>
+                <div style={{ "padding": "10px" }}>
 
                     <TextField
                         label=""
                         type="text"
                         value={textFieldValue}
                         onChange={handleTextFieldChange}
-                        prefix={<Icon source={SearchIcon} tone="base" />}
+                        prefix={<Icon source={SearchIcon} tone="base"/>}
                         autoComplete="off"
                         placeholder="Search Item"
                         clearButton
                         onClearButtonClick={handleClearButtonClick}
                         connectedLeft={<Select
-                                            label="Search by"
-                                            labelInline
-                                            options={options}
-                                            onChange={handleSelectChange}
-                                            value={selected}
-                                        />}
+                            label="Search by"
+                            labelInline
+                            options={options}
+                            onChange={handleSelectChange}
+                            value={selected}
+                        />}
                         connectedRight={<Button onClick={handleSearchClick}>Search</Button>}
                     />
 
@@ -173,25 +230,25 @@ function Table() {
                     promotedBulkActions={promotedBulkActions}
                     hasMoreItems
                     headings={[
-                        {title: 'Product'},
-                        {title: 'Supplier'},
-                        {title: 'Status'},
-                        {title: 'Price'},
+                        { title: 'Product' },
+                        { title: 'Supplier' },
+                        { title: 'Status' },
+                        { title: 'Price' },
                     ]}
-                     emptyState={!loading && emptyStateMarkup}
+                    emptyState={!loading && emptyStateMarkup}
                 >
                     {rowMarkup}
                 </IndexTable>
                 {
                     items.length ?
-                    <Pagination
-                        onPrevious={handlePrevPage}
-                        onNext={handleNextPage}
-                        type="table"
-                        hasNext={currentPage < pageInfo?.last_page}
-                        hasPrevious={currentPage > 1}
-                        label={`${getStartIndex()}-${getEndIndex()} of ${pageInfo?.total || 0} products`}
-                    /> : ''
+                        <Pagination
+                            onPrevious={handlePrevPage}
+                            onNext={handleNextPage}
+                            type="table"
+                            hasNext={currentPage < pageInfo?.last_page}
+                            hasPrevious={currentPage > 1}
+                            label={`${getStartIndex()}-${getEndIndex()} of ${pageInfo?.total || 0} products`}
+                        /> : ''
                 }
             </LegacyCard>
         </Page>

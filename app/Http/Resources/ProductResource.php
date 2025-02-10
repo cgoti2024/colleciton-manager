@@ -17,6 +17,7 @@ class ProductResource extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
+            'shopify_product_id' => $this->shopify_product_id,
             'description' => $this->description,
             'handle' => $this->handle,
             'image_url' => $this->image_url,

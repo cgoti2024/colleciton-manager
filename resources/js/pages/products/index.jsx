@@ -5,7 +5,7 @@ import {
     Badge,
     useBreakpoints,
     Page,
-    Thumbnail, useSetIndexFiltersMode, Pagination, EmptyState, InlineStack
+    Thumbnail, useSetIndexFiltersMode, Pagination, EmptyState, InlineStack,useIndexResourceState
 } from '@shopify/polaris';
 import React, {useEffect, useState} from "react";
 
@@ -63,12 +63,20 @@ function Table() {
         return endIndex > (pageInfo?.total || 0) ? (pageInfo?.total || 0) : endIndex;
     };
 
+    const {selectedResources, allResourcesSelected, handleSelectionChange} =
+        useIndexResourceState(items);
+    const promotedBulkActions = [
+        {
+            content: 'Selected items',
+            onAction: () => console.log(items),
+        }
+    ];
     const rowMarkup = items.map(
         (
             {id, title, status, image_url, first_variant, supplier },
             index,
         ) => (
-            <IndexTable.Row id={id} key={id + '-' + index} position={index}>
+            <IndexTable.Row id={id} key={id} selected={selectedResources.includes(id)} position={index}>
                 <IndexTable.Cell>
                     <InlineStack wrap={false} blockAlign={"center"} gap="500">
                         <Thumbnail
@@ -109,14 +117,19 @@ function Table() {
                     condensed={useBreakpoints().smDown}
                     resourceName={resourceName}
                     itemCount={items.length}
+                    selectedItemsCount={
+                        allResourcesSelected ? 'All' : selectedResources.length
+                    }
+                    onSelectionChange={handleSelectionChange}
+                    promotedBulkActions={promotedBulkActions}
+                    hasMoreItems
                     headings={[
                         {title: 'Product'},
                         {title: 'Supplier'},
                         {title: 'Status'},
                         {title: 'Price'},
                     ]}
-                    selectable={false}
-                    emptyState={!loading && emptyStateMarkup}
+                     emptyState={!loading && emptyStateMarkup}
                 >
                     {rowMarkup}
                 </IndexTable>

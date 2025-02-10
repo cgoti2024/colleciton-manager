@@ -17,8 +17,8 @@ function Table() {
     const [pageInfo, setPageInfo] = useState(null);
 
     const resourceName = {
-        singular: 'Order',
-        plural: 'Orders',
+        singular: 'Collection',
+        plural: 'Collections',
     };
 
     const getOrders = async () => {
@@ -80,36 +80,17 @@ function Table() {
 
     const rowMarkup = items.map(
         (
-            {id, order_number, total_price, currency, customer_name, financial_status, fulfillment_status, order_items, order_date},
+            {id, order_number, total_price, currency, customer_name, financial_status, fulfillment_status, order_items, order_date,title},
             index,
         ) => (
             <IndexTable.Row id={id} key={id + '-' + index} position={index}>
                 <IndexTable.Cell>
-                    <Text variant="bodyMd" fontWeight="bold" as="span">
-                        #{order_number}
+                    <Text variant="bodyMd" fontWeight="bold" as="span" >
+                        {title}
                     </Text>
                 </IndexTable.Cell>
-                <IndexTable.Cell>
+                <IndexTable.Cell alignment="end">
                     {moment(order_date).format('MMM DD YYYY')}
-                </IndexTable.Cell>
-                <IndexTable.Cell>
-                    {customer_name}
-                </IndexTable.Cell>
-                <IndexTable.Cell>
-                    {total_price}
-                </IndexTable.Cell>
-                <IndexTable.Cell>
-                    {order_items}
-                </IndexTable.Cell>
-                <IndexTable.Cell>
-                    <Badge tone={financialTone(status)}>
-                        {financial_status}
-                    </Badge>
-                </IndexTable.Cell>
-                <IndexTable.Cell>
-                    <Badge tone={fulfillmentTone(status)}>
-                        {fulfillment_status}
-                    </Badge>
                 </IndexTable.Cell>
             </IndexTable.Row>
         ),
@@ -117,7 +98,7 @@ function Table() {
 
     const emptyStateMarkup = (
         <EmptyState
-            heading={`No orders available`}
+            heading={`No collections available`}
         >
             <img src="/images/empty.jpg" alt="empty records" width={250}/>
         </EmptyState>
@@ -125,7 +106,7 @@ function Table() {
 
     return (
         <Page
-            title="Orders"
+            title="Collections"
             fullWidth
         >
             <LegacyCard>
@@ -134,13 +115,8 @@ function Table() {
                     resourceName={resourceName}
                     itemCount={items.length}
                     headings={[
-                        {title: 'Order'},
-                        {title: 'Date'},
-                        {title: 'Customer'},
-                        {title: 'Total'},
-                        {title: 'Items'},
-                        {title: 'Payment Status'},
-                        {title: 'Fulfillment Status'},
+                        {title: 'Title'},
+                        {title: 'Published Date'},
                     ]}
                     selectable={false}
                     emptyState={!loading && emptyStateMarkup}
@@ -155,7 +131,7 @@ function Table() {
                         type="table"
                         hasNext={currentPage < pageInfo?.last_page}
                         hasPrevious={currentPage > 1}
-                        label={`${getStartIndex()}-${getEndIndex()} of ${pageInfo?.total || 0} orders`}
+                        label={`${getStartIndex()}-${getEndIndex()} of ${pageInfo?.total || 0} collections`}
                     /> : ''
                 }
             </LegacyCard>

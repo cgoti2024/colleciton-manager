@@ -45,7 +45,7 @@ function Dashboard() {
                         title="Collections"
                         illustration="/images/checklist.png"
                         primaryAction={{
-                            content: 'Orders',
+                            content: 'Collections',
                             onAction: (event) => handleNavigation(event, '/collections'),
                         }}
                     >

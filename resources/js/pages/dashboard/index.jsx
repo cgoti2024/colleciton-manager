@@ -3,9 +3,9 @@ import React, {useEffect, useState} from 'react';
 import {useNavigate} from "react-router-dom";
 
 function Dashboard() {
-    const [items, setItems] = useState([]);
-    const [totalProducts, setTotalProducts] = useState(0);
-    const [syncStatus, setSyncStatus] = useState('');
+    const [items, setItems] = useState([])
+    const [isSyncing, setIsSyncing] = useState(false);
+
     const navigate = useNavigate();
     const handleNavigation = (event, type) => {
         event.preventDefault();
@@ -15,37 +15,20 @@ function Dashboard() {
     const getCounts = async () => {
         await axios.get('/api/dashboard').then((res) => {
             setItems(res.data.data)
+            console.log(res.data.data)
         }).catch((err) => {
             console.log(err)
         })
     }
 
-    const getProductSyncStatus = async () => {
-        await axios.get('/api/sync-product-status').then((res) => {
-            setTotalProducts(res.data?.data?.totalProducts);
-            setSyncStatus(res.data?.data?.productSyncStatus);
-            console.log(res.data, 'sync-product-status')
-        }).catch((err) => {
-            console.log(err)
-        })
-    }
-
-    const startProductSync = async () => {
-        const intervalId = setInterval(async () => {
-            await getProductSyncStatus();
-            if (syncStatus === 'end' || syncStatus === 'failed') {
-                clearInterval(intervalId);
-            }
-        }, 10000);
-    }
-
-    return () => clearInterval(intervalId);
-
-    useEffect( () => {
-         getCounts();
-         getProductSyncStatus();
+    useEffect(() => {
+        getCounts();
     }, [])
 
+    const handleSyncClick = () => {
+        setIsSyncing((prev) => !prev);
+        console.log("Syncing state:", !isSyncing);
+    };
     return (
         <Page>
             <Grid>
@@ -65,7 +48,7 @@ function Dashboard() {
                 </Grid.Cell>
                 <Grid.Cell columnSpan={{xs: 6, sm: 6, md: 6, lg: 6, xl: 6}}>
                     <CalloutCard
-                        title="Manual Collections"
+                        title="Collections"
                         illustration="/images/checklist.png"
                         primaryAction={{
                             content: 'Collections',
@@ -73,8 +56,19 @@ function Dashboard() {
                         }}
                     >
                         <Text variant="headingMd" as="h1">
-                            {items.collections}
+                            {items.orders}
                         </Text>
+                    </CalloutCard>
+                </Grid.Cell>
+                <Grid.Cell columnSpan={{xs: 12, sm: 12, md: 12, lg: 12, xl: 12}}>
+                    <CalloutCard
+                        title="Sync All Products"
+                        illustration="https://cdn.shopify.com/s/assets/admin/checkout/settings-customizecart-705f57c725ac05be5a34ec20c05b94298cb8afd10aac7bd9c7ad02030f48cfa0.svg"
+                        primaryAction={{
+                            content: 'Sync Products',
+                            onAction: handleSyncClick,
+                        }}
+                    >
                     </CalloutCard>
                 </Grid.Cell>
             </Grid>

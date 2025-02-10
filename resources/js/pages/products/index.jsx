@@ -5,15 +5,34 @@ import {
     Badge,
     useBreakpoints,
     Page,
-    Thumbnail, useSetIndexFiltersMode, Pagination, EmptyState, InlineStack,useIndexResourceState
+    Thumbnail, useSetIndexFiltersMode, Pagination, EmptyState, InlineStack,useIndexResourceState,TextField,Icon,Button,Select
 } from '@shopify/polaris';
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState,useCallback} from "react";
+import {
+    SearchIcon
+} from '@shopify/polaris-icons';
 
 function Table() {
     const [items, setItems] = useState([])
     const [loading, setLoading] = useState([])
     const [currentPage, setCurrentPage] = useState(1);
     const [pageInfo, setPageInfo] = useState(null);
+    const [textFieldValue, setTextFieldValue] = useState(null);
+    const [selected, setSelected] = useState('newestUpdate');
+
+    const handleSelectChange = (value)=> {
+        setSelected(value)
+    };
+    const handleTextFieldChange = (value)=>{
+        setTextFieldValue(value)
+    }
+
+    const options = [
+        {label: 'Title', value: 'title'},
+        {label: 'Supplier', value: 'supplier'},
+        {label: 'Tags', value: 'tags'},
+        {label: 'All', value: 'all'},
+    ];
 
     const resourceName = {
         singular: 'Product',
@@ -22,7 +41,7 @@ function Table() {
 
     const getProducts = async () => {
         setLoading(true)
-        await axios.get('/api/products?page='+currentPage).then((res) => {
+        await axios.get('/api/products?page='+currentPage+'&search='+textFieldValue+'&type='+selected).then((res) => {
             console.log(res, 'res')
             setItems(res.data.data)
             setCurrentPage(res.data.meta.current_page);
@@ -40,7 +59,7 @@ function Table() {
 
     useEffect(() => {
         getProducts();  // Fetch the products after currentPage is updated
-    }, [currentPage]);
+    }, [currentPage],textFieldValue);
 
     const handlePrevPage = () => {
         if (currentPage > 1) {
@@ -71,6 +90,13 @@ function Table() {
             onAction: () => console.log(items),
         }
     ];
+
+    const handleClearButtonClick = useCallback(() => setTextFieldValue(''), []);
+
+    const handleSearchClick = () => {
+        getProducts();
+    };
+
     const rowMarkup = items.map(
         (
             {id, title, status, image_url, first_variant, supplier },
@@ -113,6 +139,29 @@ function Table() {
             fullWidth
         >
             <LegacyCard>
+                <div  style={{"padding":"10px"}}>
+
+                    <TextField
+                        label=""
+                        type="text"
+                        value={textFieldValue}
+                        onChange={handleTextFieldChange}
+                        prefix={<Icon source={SearchIcon} tone="base" />}
+                        autoComplete="off"
+                        placeholder="Search Item"
+                        clearButton
+                        onClearButtonClick={handleClearButtonClick}
+                        connectedLeft={<Select
+                                            label="Search by"
+                                            labelInline
+                                            options={options}
+                                            onChange={handleSelectChange}
+                                            value={selected}
+                                        />}
+                        connectedRight={<Button onClick={handleSearchClick}>Search</Button>}
+                    />
+
+                </div>
                 <IndexTable
                     condensed={useBreakpoints().smDown}
                     resourceName={resourceName}

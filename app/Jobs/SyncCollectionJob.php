@@ -26,7 +26,7 @@ class SyncCollectionJob implements ShouldQueue
      */
     public function __construct($shop)
     {
-        $this->shop = $shop;;
+        $this->shop = $shop;
     }
 
     /**

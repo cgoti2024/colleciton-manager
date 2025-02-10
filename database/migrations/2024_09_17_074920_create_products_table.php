@@ -20,7 +20,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('status')->nullable();
             $table->text('supplier')->nullable();
-            $table->text('tags')->nullable();
+            $table->json('tags')->nullable();
             $table->text('product_type')->nullable();
             $table->text('image_url')->nullable();
             $table->json('images')->nullable();

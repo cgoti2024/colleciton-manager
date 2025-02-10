@@ -37,25 +37,11 @@ class ProductRepository implements ProductRepositoryInterface
             'description'  => $payloadData['body_html'],
             'supplier'     => $payloadData['vendor'],
             'status'       => $payloadData['status'],
-            'tags'         => $payloadData['tags'],
+            'tags'         => explode(', ',$payloadData['tags']),
             'product_type' => $payloadData['product_type'],
             'images'       => json_encode($payloadData['images']),
             'image_url'    => @$payloadData['image']['src'],
         ]);
-
-        if (isset($payloadData['options']) && count($payloadData['options'])) {
-            foreach ($payloadData['options'] as $index => $option) {
-                $product->productOptions()->updateOrCreate([
-                    'product_id'        => $product['id'],
-                    'shopify_option_id' => $option['id'],
-                ], [
-                    'shop_id'           => $shopId,
-                    'name'              => $option['name'],
-                    'values'            => $option['values'],
-                    'position'          => $index + 1,
-                ]);
-            }
-        }
 
         foreach (@$payloadData['variants'] as $variant) {
             ProductVariant::updateOrCreate([

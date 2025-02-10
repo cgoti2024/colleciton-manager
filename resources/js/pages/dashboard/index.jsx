@@ -3,9 +3,10 @@ import React, {useEffect, useState} from 'react';
 import {useNavigate} from "react-router-dom";
 
 function Dashboard() {
-    const [items, setItems] = useState([])
+    const [items, setItems] = useState([]);
+    const [totalProducts, setTotalProducts] = useState(0);
+    const [syncStatus, setSyncStatus] = useState('');
     const [isSyncing, setIsSyncing] = useState(false);
-
     const navigate = useNavigate();
     const handleNavigation = (event, type) => {
         event.preventDefault();
@@ -15,14 +16,32 @@ function Dashboard() {
     const getCounts = async () => {
         await axios.get('/api/dashboard').then((res) => {
             setItems(res.data.data)
-            console.log(res.data.data)
         }).catch((err) => {
             console.log(err)
         })
     }
 
-    useEffect(() => {
-        getCounts();
+    const getProductSyncStatus = async () => {
+        await axios.get('/api/sync-product-status').then((res) => {
+            setTotalProducts(res.data?.data?.totalProducts);
+            setSyncStatus(res.data?.data?.productSyncStatus);
+            console.log(res.data, 'sync-product-status')
+        }).catch((err) => {
+            console.log(err)
+        })
+    }
+
+    const startProductSync = async () => {
+        const intervalId = setInterval(async () => {
+            await getProductSyncStatus();
+            if (syncStatus === 'end' || syncStatus === 'failed') {
+                clearInterval(intervalId);
+            }
+        }, 10000);
+    }
+
+    useEffect( () => {
+         getCounts();
     }, [])
 
     const handleSyncClick = () => {
@@ -48,7 +67,7 @@ function Dashboard() {
                 </Grid.Cell>
                 <Grid.Cell columnSpan={{xs: 6, sm: 6, md: 6, lg: 6, xl: 6}}>
                     <CalloutCard
-                        title="Collections"
+                        title="Manual Collections"
                         illustration="/images/checklist.png"
                         primaryAction={{
                             content: 'Collections',
@@ -56,7 +75,7 @@ function Dashboard() {
                         }}
                     >
                         <Text variant="headingMd" as="h1">
-                            {items.orders}
+                            {items.collections}
                         </Text>
                     </CalloutCard>
                 </Grid.Cell>

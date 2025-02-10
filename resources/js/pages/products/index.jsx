@@ -16,7 +16,8 @@ import {
     Button,
     Select,
     Modal,
-    TextContainer
+    TextContainer,
+    Layout
 } from '@shopify/polaris';
 import React, {useEffect, useState, useCallback} from "react";
 import {
@@ -30,7 +31,7 @@ function Table() {
     const [pageInfo, setPageInfo] = useState(null);
     const [textFieldValue, setTextFieldValue] = useState(null);
     const [selected, setSelected] = useState('newestUpdate');
-    const [active, setActive] = useState(true);
+    const [active, setActive] = useState(false);
     const [newCollection, setNewCollection] = useState({
         title: '',
         description: '',
@@ -38,8 +39,10 @@ function Table() {
         products: []
     });
 
-
-    const handleChange = () => setActive(!active);
+    const handleChange = () => {
+        setActive(!active);
+        handleSelectedProducts()
+    };
 
     const handleSelectChange = (value) => {
         setSelected(value)
@@ -106,12 +109,19 @@ function Table() {
     const { selectedResources, allResourcesSelected, handleSelectionChange } =
         useIndexResourceState(items);
 
-    const promotedBulkActions = [
-        {
-            content: 'Selected items',
-            onAction: () => console.log(items),
-        }
-    ];
+
+    const handleSelectedProducts = () => {
+        const selectedProducts = items.filter((item) => selectedResources.includes(item.id));
+        setNewCollection((prev) => {
+            const existingIds = new Set(prev.products.map((product) => product.id));
+            const newUniqueProducts = selectedProducts.filter((product) => !existingIds.has(product.id));
+            return {
+                ...prev,
+                products: [...newUniqueProducts],
+            };
+        });
+
+    };
 
     const handleClearButtonClick = useCallback(() => setTextFieldValue(''), []);
 
@@ -125,6 +135,12 @@ function Table() {
             [key]: value
         }));
     };
+
+    const handleCollectionCreate = () => {
+        console.log(newCollection,"chirag")
+        setActive(false)
+    };
+
 
     const rowMarkup = items.map(
         (
@@ -174,24 +190,38 @@ function Table() {
                 open={active}
                 onClose={handleChange}
                 primaryAction={{
-                    content: 'Add Instagram',
-                    onAction: handleChange,
+                    content: 'Create Manual Collection',
+                    onAction: handleCollectionCreate,
                 }}
                 title="Create Manual Collection"
-                secondaryActions={[
-                    {
-                        content: 'Learn more',
-                        onAction: handleChange,
-                    },
-                ]}
             >
                 <Modal.Section>
                     <TextField
-                        label="Store name"
+                        label="Title"
                         value={newCollection.title}
-                        onChange={handleCollectionChange}
+                        type="text"
+                        onChange={(value) => handleCollectionChange('title', value)}
                         autoComplete="off"
                     />
+                    <TextField
+                        label="Description"
+                        type="text"
+                        value={newCollection.description}
+                        onChange={(value) => handleCollectionChange('description',value)}
+                        multiline={4}
+                        autoComplete="off"
+                    />
+
+                    <div style={{"marginTop":"10px"}}>
+                        <Layout>
+                            <Layout.Section variant="oneThird">
+                                <LegacyCard title="Selected Products" sectioned>
+                                    <p>{newCollection.products.length ? newCollection.products.length :  "No Product Select"}</p>
+                                </LegacyCard>
+                            </Layout.Section>
+                        </Layout>
+                    </div>
+
 
                 </Modal.Section>
             </Modal>
@@ -227,7 +257,6 @@ function Table() {
                         allResourcesSelected ? 'All' : selectedResources.length
                     }
                     onSelectionChange={handleSelectionChange}
-                    promotedBulkActions={promotedBulkActions}
                     hasMoreItems
                     headings={[
                         { title: 'Product' },

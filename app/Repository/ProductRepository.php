@@ -21,6 +21,40 @@ class ProductRepository implements ProductRepositoryInterface
         return $products;
     }
 
+    public function filteredProducts($shopId, $query, $type)
+    {
+        $keywords = explode(',', $query);
+        $products = Product::where('shop_id', $shopId);
+
+        if ($type === 'tags') {
+            $products->where(function ($q) use ($keywords) {
+                foreach ($keywords as $keyword) {
+                    $q->orWhereJsonContains('tags', $keyword);
+                }
+            });
+        } elseif ($type === 'title') {
+            $products->where(function ($q) use ($keywords) {
+                foreach ($keywords as $keyword) {
+                    $q->orWhere('title', 'like', "%{$keyword}%");
+                }
+            });
+        } elseif ($type === 'all') {
+            $products->where(function ($q) use ($keywords) {
+                foreach ($keywords as $keyword) {
+                    $q->orWhere('title', 'like', "%{$keyword}%")
+                        ->orWhereJsonContains('tags', $keyword)
+                        ->orWhere('handle', 'like', "%{$keyword}%")
+                        ->orWhere('description', 'like', "%{$keyword}%")
+                        ->orWhere('supplier', 'like', "%{$keyword}%")
+                        ->orWhere('product_type', 'like', "%{$keyword}%")
+                        ->orWhere('metafields', 'like', "%{$keyword}%");
+                }
+            });
+        }
+
+        return  $products->paginate(10);
+    }
+
     /**
      * @param $payloadData
      * @param $shopId

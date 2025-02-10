@@ -15,9 +15,16 @@ class ProductController extends Controller
         $this->productRepo = $productRepo;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $products = $this->productRepo->all();
+        if ($request->search) {
+            $shopId = \Auth::id();
+            $query = $request->search;
+            $type = $request->type;
+            $products = $this->productRepo->filteredProducts($shopId, $query, $type);
+        } else {
+            $products = $this->productRepo->all();
+        }
 
         return ProductResource::collection($products);
     }

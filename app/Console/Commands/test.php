@@ -32,6 +32,8 @@ class test extends Command
     public function handle()
     {
         $user = User::find(2);
+        $response = $user->api()->rest('GET', '/admin/products/count.json');
+        dd($response['body']['count']);
         $this->getProducts($user);
 //        $this->createCollection($user);
     }

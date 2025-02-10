@@ -35,6 +35,7 @@ class SyncProductsJob implements ShouldQueue
      */
     public function handle(): void
     {
+        saveSetting($this->shop, 'PRODUCT_SYNC_PROCESS', 'start');
         try {
             $hasNextPage = true;
             $cursor = null;
@@ -99,14 +100,18 @@ class SyncProductsJob implements ShouldQueue
                     $cursor = $products[count($products) - 1]['cursor'] ?? null;
                     $this->insertProductInDB($response, $this->shop->id);
                     sleep(1);
+                    saveSetting($this->shop, 'SYNCED_PRODUCT_COUNT', ($mainIndex+1)*250);
                 } else {
                     info('there is error for retrieving products for mainindex => '.$mainIndex);
                 }
 
                 $mainIndex++;
             }
+            saveSetting($this->shop, 'PRODUCT_SYNC_PROCESS', 'end');
         } catch (\Exception $exception) {
             info('Error while syncing products: ' . $exception->getMessage());
+            saveSetting($this->shop, 'PRODUCT_SYNC_PROCESS', 'failed');
+            saveSetting($this->shop, 'PRODUCT_SYNC_ERROR', ['exception' => $exception->getMessage(), 'index' => $mainIndex]);
         }
     }
 

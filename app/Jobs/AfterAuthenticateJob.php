@@ -34,6 +34,15 @@ class AfterAuthenticateJob implements ShouldQueue
             return;
         }
 
-        SyncProductsJob::dispatch($shop);
+        SyncCollectionJob::dispatch($shop);
+        $this->saveProductCount($shop);
+    }
+
+    public function saveProductCount($shop) {
+        $response = $shop->api()->rest('GET', '/admin/products/count.json');
+        info('Product count'.$response['body']['count']);
+        if ($response['status'] == 200 && isset($response['body']['count'])) {
+            saveSetting($shop, 'TOTAL_PRODUCT_COUNTS', $response['body']['count']);
+        }
     }
 }

@@ -2,8 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\SyncCustomersJob;
-use App\Jobs\SyncOrdersJob;
+use App\Jobs\SyncCollectionJob;
 use App\Jobs\SyncProductsJob;
 use App\Models\User;
 use Illuminate\Console\Command;
@@ -29,10 +28,10 @@ class AppTest extends Command
      */
     public function handle()
     {
-        $shop = User::first();
+        $shop = User::find(2);
 
         $this->info('Products started sync...');
-         SyncProductsJob::dispatchSync($shop);
+         SyncCollectionJob::dispatchSync($shop);
 
         dd('Data synced successfully..!!!');
     }

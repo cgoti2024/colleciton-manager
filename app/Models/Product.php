@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property int $shop_id
@@ -68,6 +68,12 @@ class Product extends Model
         'product_type',
         'images',
         'image_url',
+        'metafields'
+    ];
+
+    protected $casts = [
+      'metafields' => 'json',
+      'tags' => 'json',
     ];
 
     public function variants()

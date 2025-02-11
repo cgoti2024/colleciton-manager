@@ -55,6 +55,7 @@ function Table() {
         { label: 'Title', value: 'title' },
         { label: 'Supplier', value: 'supplier' },
         { label: 'Tags', value: 'tags' },
+        { label: 'Product Type', value: 'product_type' },
         { label: 'All', value: 'all' },
     ];
 
@@ -63,9 +64,10 @@ function Table() {
         plural: 'Products',
     };
 
-    const getProducts = async () => {
+    const getProducts = async (page = '') => {
         setLoading(true)
-        await axios.get('/api/products?page=' + currentPage + '&search=' + textFieldValue + '&type=' + selected).then((res) => {
+        let CurrPage = page || currentPage;
+        await axios.get('/api/products?page=' + CurrPage + '&search=' + textFieldValue + '&type=' + selected).then((res) => {
             console.log(res, 'res')
             setItems(res.data.data)
             setCurrentPage(res.data.meta.current_page);
@@ -126,7 +128,7 @@ function Table() {
     const handleClearButtonClick = useCallback(() => setTextFieldValue(''), []);
 
     const handleSearchClick = () => {
-        getProducts();
+        getProducts(1);
     };
 
     const handleCollectionChange = (key, value) => {

@@ -29,25 +29,31 @@ class ProductRepository implements ProductRepositoryInterface
         if ($type === 'tags') {
             $products->where(function ($q) use ($keywords) {
                 foreach ($keywords as $keyword) {
-                    $q->orWhereJsonContains('tags', $keyword);
+                    $q->orWhereJsonContains('tags', trim($keyword));
                 }
             });
         } elseif ($type === 'title') {
             $products->where(function ($q) use ($keywords) {
                 foreach ($keywords as $keyword) {
-                    $q->orWhere('title', 'like', "%{$keyword}%");
+                    $q->orWhere('title', 'like', "%".trim($keyword)."%");
+                }
+            });
+        } elseif ($type === 'product_type') {
+            $products->where(function ($q) use ($keywords) {
+                foreach ($keywords as $keyword) {
+                    $q->orWhere('product_type', 'like', "%".trim($keyword)."%");
                 }
             });
         } elseif ($type === 'all') {
             $products->where(function ($q) use ($keywords) {
                 foreach ($keywords as $keyword) {
-                    $q->orWhere('title', 'like', "%{$keyword}%")
-                        ->orWhereJsonContains('tags', $keyword)
-                        ->orWhere('handle', 'like', "%{$keyword}%")
-                        ->orWhere('description', 'like', "%{$keyword}%")
-                        ->orWhere('supplier', 'like', "%{$keyword}%")
-                        ->orWhere('product_type', 'like', "%{$keyword}%")
-                        ->orWhere('metafields', 'like', "%{$keyword}%");
+                    $q->orWhere('title', 'like', "%".trim($keyword)."%")
+                        ->orWhereJsonContains('tags', trim($keyword))
+                        ->orWhere('handle', 'like', "%".trim($keyword)."%")
+                        ->orWhere('description', 'like', "%".trim($keyword)."%")
+                        ->orWhere('supplier', 'like', "%".trim($keyword)."%")
+                        ->orWhere('product_type', 'like', "%".trim($keyword)."%")
+                        ->orWhere('metafields', 'like', "%".trim($keyword)."%");
                 }
             });
         }

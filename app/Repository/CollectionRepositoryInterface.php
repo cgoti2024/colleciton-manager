@@ -9,4 +9,6 @@ interface CollectionRepositoryInterface
     public function store($payloadData, $shopId);
 
     public function destroy($payloadData, $shopId);
+
+    public function createCollection($payloadData, $shop);
 }

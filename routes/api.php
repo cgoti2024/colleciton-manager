@@ -12,4 +12,5 @@ Route::group(['middleware' => ['verify.shopify']], static function () {
     Route::get('/dashboard', [DashboardController::class, 'index']);
     Route::get('/sync-product-status', [SettingController::class, 'syncProducts']);
     Route::get('/sync-product', [SettingController::class, 'startProductSync']);
+    Route::post('/create-collections', [CollectionController::class, 'createCollection']);
 });

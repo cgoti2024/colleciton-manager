@@ -35,12 +35,11 @@ function Table() {
     const [currentPage, setCurrentPage] = useState(1);
     const [pageInfo, setPageInfo] = useState(null);
     const [textFieldValue, setTextFieldValue] = useState('');
-    const [selected, setSelected] = useState('newestUpdate');
+    const [selected, setSelected] = useState('all');
     const [active, setActive] = useState(false);
     const [newCollection, setNewCollection] = useState({
         title: '',
         description: '',
-        image: '',
         products: []
     });
 
@@ -143,9 +142,26 @@ function Table() {
         }));
     };
 
-    const handleCollectionCreate = () => {
-        console.log(newCollection,"chirag")
-        setActive(false)
+    const handleCollectionCreate = async () => {
+        let params = {
+            'title' : newCollection?.title,
+            'description' : newCollection?.description,
+            'products': newCollection?.products?.map(v => v.shopify_product_id),
+            'allSelected': allResourcesSelected ? 1 : 0
+        };
+        if (allResourcesSelected) {
+            params['query'] = textFieldValue;
+            params['type'] = selected;
+        }
+        console.log(params, 'params')
+        await axios.post('/api/create-collections', params)
+            .then((res) => {
+                console.log(res, 'res')
+            }).catch((err) => {
+                console.log(err)
+            }).finally(() => {
+                setActive(false)
+            })
     };
 
 
@@ -197,20 +213,20 @@ function Table() {
                             <InlineStack wrap={false}>
                                 <div style={{ borderInlineEnd: '1px solid #dbdbdb' }}>
                                     <Box paddingInlineEnd="400">
-                                        <Text variant="headingXs">Products by sell-through rate</Text>
-                                        <Text tone="subdued">0% —</Text>
+                                        <Text variant="headingXs">Step 1</Text>
+                                        <Text tone="subdued">Select products after search</Text>
                                     </Box>
                                 </div>
                                 <div style={{ borderInlineEnd: '1px solid #dbdbdb' }}>
                                     <Box paddingInlineEnd="400" paddingInlineStart="400">
-                                        <Text variant="headingXs">Products by days of inventory remaining</Text>
-                                        <Text tone="subdued">No data</Text>
+                                        <Text variant="headingXs">Step 2</Text>
+                                        <Text tone="subdued">Open manual collection modal by clicking button.</Text>
                                     </Box>
                                 </div>
                                 <div>
                                     <Box paddingInlineEnd="400" paddingInlineStart="400">
-                                        <Text variant="headingXs">ABC product analysis</Text>
-                                        <Text tone="subdued">No data</Text>
+                                        <Text variant="headingXs">Step 3</Text>
+                                        <Text tone="subdued">Enter title and description and hit create button.</Text>
                                     </Box>
                                 </div>
                             </InlineStack>

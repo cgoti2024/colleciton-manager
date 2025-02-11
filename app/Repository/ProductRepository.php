@@ -21,7 +21,7 @@ class ProductRepository implements ProductRepositoryInterface
         return $products;
     }
 
-    public function filteredProducts($shopId, $query, $type)
+    public function filteredProducts($shopId, $query, $type , $from = 'productController')
     {
         $keywords = explode(',', $query);
         $products = Product::where('shop_id', $shopId);
@@ -58,7 +58,10 @@ class ProductRepository implements ProductRepositoryInterface
             });
         }
 
-        return  $products->paginate(10);
+        if ($from === 'collection') {
+            return $products->pluck('shopify_product_id');
+        }
+        return $products->paginate(10);
     }
 
     /**

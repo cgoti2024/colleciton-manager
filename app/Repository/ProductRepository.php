@@ -21,6 +21,46 @@ class ProductRepository implements ProductRepositoryInterface
         return $products;
     }
 
+    public function filteredProducts($shopId, $query, $type)
+    {
+        $keywords = explode(',', $query);
+        $products = Product::where('shop_id', $shopId);
+
+        if ($type === 'tags') {
+            $products->where(function ($q) use ($keywords) {
+                foreach ($keywords as $keyword) {
+                    $q->orWhereJsonContains('tags', trim($keyword));
+                }
+            });
+        } elseif ($type === 'title') {
+            $products->where(function ($q) use ($keywords) {
+                foreach ($keywords as $keyword) {
+                    $q->orWhere('title', 'like', "%".trim($keyword)."%");
+                }
+            });
+        } elseif ($type === 'product_type') {
+            $products->where(function ($q) use ($keywords) {
+                foreach ($keywords as $keyword) {
+                    $q->orWhere('product_type', 'like', "%".trim($keyword)."%");
+                }
+            });
+        } elseif ($type === 'all') {
+            $products->where(function ($q) use ($keywords) {
+                foreach ($keywords as $keyword) {
+                    $q->orWhere('title', 'like', "%".trim($keyword)."%")
+                        ->orWhereJsonContains('tags', trim($keyword))
+                        ->orWhere('handle', 'like', "%".trim($keyword)."%")
+                        ->orWhere('description', 'like', "%".trim($keyword)."%")
+                        ->orWhere('supplier', 'like', "%".trim($keyword)."%")
+                        ->orWhere('product_type', 'like', "%".trim($keyword)."%")
+                        ->orWhere('metafields', 'like', "%".trim($keyword)."%");
+                }
+            });
+        }
+
+        return  $products->paginate(10);
+    }
+
     /**
      * @param $payloadData
      * @param $shopId

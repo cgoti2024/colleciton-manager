@@ -6,6 +6,8 @@ function Dashboard() {
     const [items, setItems] = useState([]);
     const [totalProducts, setTotalProducts] = useState(0);
     const [syncStatus, setSyncStatus] = useState('');
+    const [syncedProducts, setSyncedProducts] = useState(0);
+    const [syncPercentage, setSyncPercentage] = useState(0);
     const [isSyncing, setIsSyncing] = useState(false);
     const navigate = useNavigate();
     const handleNavigation = (event, type) => {
@@ -16,6 +18,12 @@ function Dashboard() {
     const getCounts = async () => {
         await axios.get('/api/dashboard').then((res) => {
             setItems(res.data.data)
+            setTotalProducts(res.data?.data?.totalProducts);
+            setSyncStatus(res.data?.data?.productSyncStatus);
+            setSyncedProducts(res.data?.data?.syncedProducts);
+            if (syncStatus === 'start') {
+                startProductSync();
+            }
         }).catch((err) => {
             console.log(err)
         })
@@ -25,7 +33,12 @@ function Dashboard() {
         await axios.get('/api/sync-product-status').then((res) => {
             setTotalProducts(res.data?.data?.totalProducts);
             setSyncStatus(res.data?.data?.productSyncStatus);
-            console.log(res.data, 'sync-product-status')
+            setSyncedProducts(res.data?.data?.syncedProducts);
+            if (totalProducts > 0) {
+                setSyncPercentage((syncedProducts / totalProducts) * 100);
+            } else {
+                setSyncPercentage(0);
+            }
         }).catch((err) => {
             console.log(err)
         })
@@ -44,8 +57,19 @@ function Dashboard() {
          getCounts();
     }, [])
 
-    const handleSyncClick = () => {
-        setIsSyncing((prev) => !prev);
+    const handleSyncClick = async () => {
+        await axios.get('/api/sync-product').then((res) => {
+            setTotalProducts(res.data?.data?.totalProducts);
+            setSyncStatus(res.data?.data?.productSyncStatus);
+            setSyncedProducts(res.data?.data?.syncedProducts);
+            if (totalProducts > 0) {
+                setSyncPercentage((syncedProducts / totalProducts) * 100);
+            } else {
+                setSyncPercentage(0);
+            }
+        }).catch((err) => {
+            console.log(err)
+        })
         console.log("Syncing state:", !isSyncing);
     };
     return (
@@ -79,7 +103,7 @@ function Dashboard() {
                         </Text>
                     </CalloutCard>
                 </Grid.Cell>
-                <Grid.Cell columnSpan={{xs: 12, sm: 12, md: 12, lg: 12, xl: 12}}>
+                <Grid.Cell columnSpan={{xs: 6, sm: 6, md: 6, lg: 12, xl: 12}}>
                     <CalloutCard
                         title="Sync All Products"
                         illustration="https://cdn.shopify.com/s/assets/admin/checkout/settings-customizecart-705f57c725ac05be5a34ec20c05b94298cb8afd10aac7bd9c7ad02030f48cfa0.svg"
@@ -88,7 +112,8 @@ function Dashboard() {
                             onAction: handleSyncClick,
                         }}
                     >
-                        {isSyncing && <ProgressBar progress={70} tone="success" size="small" />}
+                        { parseInt(syncedProducts) > 0 && <p>Synced products: <b>{syncedProducts}</b></p> }
+                        { syncPercentage > 0 && <ProgressBar progress={syncPercentage} tone="success" size="small" /> }
                     </CalloutCard>
                 </Grid.Cell>
             </Grid>

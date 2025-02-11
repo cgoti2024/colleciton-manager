@@ -34,7 +34,7 @@ function Table() {
     const [loading, setLoading] = useState([])
     const [currentPage, setCurrentPage] = useState(1);
     const [pageInfo, setPageInfo] = useState(null);
-    const [textFieldValue, setTextFieldValue] = useState(null);
+    const [textFieldValue, setTextFieldValue] = useState('');
     const [selected, setSelected] = useState('newestUpdate');
     const [active, setActive] = useState(false);
     const [newCollection, setNewCollection] = useState({
@@ -60,6 +60,7 @@ function Table() {
         { label: 'Title', value: 'title' },
         { label: 'Supplier', value: 'supplier' },
         { label: 'Tags', value: 'tags' },
+        { label: 'Product Type', value: 'product_type' },
         { label: 'All', value: 'all' },
     ];
 
@@ -68,9 +69,10 @@ function Table() {
         plural: 'Products',
     };
 
-    const getProducts = async () => {
+    const getProducts = async (page = '') => {
         setLoading(true)
-        await axios.get('/api/products?page=' + currentPage + '&search=' + textFieldValue + '&type=' + selected).then((res) => {
+        let CurrPage = page || currentPage;
+        await axios.get('/api/products?page=' + CurrPage + '&search=' + textFieldValue + '&type=' + selected).then((res) => {
             console.log(res, 'res')
             setItems(res.data.data)
             setCurrentPage(res.data.meta.current_page);
@@ -131,7 +133,7 @@ function Table() {
     const handleClearButtonClick = useCallback(() => setTextFieldValue(''), []);
 
     const handleSearchClick = () => {
-        getProducts();
+        getProducts(1);
     };
 
     const handleCollectionChange = (key, value) => {
@@ -166,7 +168,7 @@ function Table() {
                 </IndexTable.Cell>
                 <IndexTable.Cell>{supplier}</IndexTable.Cell>
                 <IndexTable.Cell>
-                    <Badge tone={status === 'active' ? 'success' : ''}>
+                    <Badge tone={status === 'active' || status === 'ACTIVE' ? 'success' : ''}>
                         {status}
                     </Badge>
                 </IndexTable.Cell>
@@ -253,7 +255,7 @@ function Table() {
                         <Layout>
                             <Layout.Section variant="oneThird">
                                 <LegacyCard title="Selected Products" sectioned>
-                                    <p>{newCollection.products.length ? newCollection.products.length :  "No Product Select"}</p>
+                                    <p>{newCollection.products.length ? `${newCollection.products.length} ${newCollection.products.length > 1 ? 'products' : 'product'} selected` :  "No products selected"}</p>
                                 </LegacyCard>
                             </Layout.Section>
                         </Layout>
@@ -274,6 +276,7 @@ function Table() {
                         autoComplete="off"
                         placeholder="Search Item"
                         clearButton
+                        helpText="To search in multiple tags or queries at once, use a comma-separated query."
                         onClearButtonClick={handleClearButtonClick}
                         connectedLeft={<Select
                             label="Search by"

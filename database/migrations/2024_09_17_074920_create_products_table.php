@@ -24,6 +24,7 @@ return new class extends Migration
             $table->text('product_type')->nullable();
             $table->text('image_url')->nullable();
             $table->json('images')->nullable();
+            $table->json('metafields')->nullable();
             $table->softDeletes();
             $table->timestamps();
 

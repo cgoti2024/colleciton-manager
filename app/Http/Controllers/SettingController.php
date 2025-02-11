@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\SyncProductsJob;
-use Illuminate\Http\Request;
 
 class SettingController extends Controller
 {
@@ -24,5 +23,7 @@ class SettingController extends Controller
     public function startProductSync() {
         $shop = \Auth::user();
         SyncProductsJob::dispatch($shop);
+
+        return $this->sendSuccess('Product sync process started!');
     }
 }

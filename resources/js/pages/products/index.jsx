@@ -88,7 +88,7 @@ function Table() {
     }, [])
 
     useEffect(() => {
-        getProducts();  // Fetch the products after currentPage is updated
+        getProducts();
     }, [currentPage], textFieldValue);
 
     const handlePrevPage = () => {

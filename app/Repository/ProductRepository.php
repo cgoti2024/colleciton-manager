@@ -16,9 +16,7 @@ class ProductRepository implements ProductRepositoryInterface
 
     public function all()
     {
-        $products = Product::ofShop(AuthId())->paginate(10);
-
-        return $products;
+        return Product::ofShop(AuthId())->paginate(10);
     }
 
     public function filteredProducts($shopId, $query, $type , $from = 'productController')

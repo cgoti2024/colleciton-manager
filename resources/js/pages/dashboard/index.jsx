@@ -16,13 +16,14 @@ function Dashboard() {
     };
 
     const getCounts = async () => {
-        await axios.get('/api/dashboard').then((res) => {
+        await axios.get('/api/dashboard').then(async (res) => {
             setItems(res.data.data)
             setTotalProducts(res.data?.data?.totalProducts);
             setSyncStatus(res.data?.data?.productSyncStatus);
             setSyncedProducts(res.data?.data?.syncedProducts);
-            if (syncStatus === 'start') {
-                startProductSync();
+            await getProductSyncStatus();
+            if (res.data?.data?.productSyncStatus === 'start') {
+                await startProductSync();
             }
         }).catch((err) => {
             console.log(err)
@@ -34,8 +35,10 @@ function Dashboard() {
             setTotalProducts(res.data?.data?.totalProducts);
             setSyncStatus(res.data?.data?.productSyncStatus);
             setSyncedProducts(res.data?.data?.syncedProducts);
-            if (totalProducts > 0) {
-                setSyncPercentage((syncedProducts / totalProducts) * 100);
+            let syncPd = parseInt(res.data?.data?.syncedProducts)
+            let totalPd = parseInt(res.data?.data?.totalProducts)
+            if (totalPd > 0) {
+                setSyncPercentage(syncPd > totalPd ? ((syncPd / totalPd) * 100) : 100);
             } else {
                 setSyncPercentage(0);
             }
@@ -62,8 +65,8 @@ function Dashboard() {
             setTotalProducts(res.data?.data?.totalProducts);
             setSyncStatus(res.data?.data?.productSyncStatus);
             setSyncedProducts(res.data?.data?.syncedProducts);
-            if (totalProducts > 0) {
-                setSyncPercentage((syncedProducts / totalProducts) * 100);
+            if (res.data?.data?.totalProducts) {
+                startProductSync();
             } else {
                 setSyncPercentage(0);
             }
@@ -110,10 +113,11 @@ function Dashboard() {
                         primaryAction={{
                             content: 'Sync Products',
                             onAction: handleSyncClick,
+                            disabled: syncStatus === 'end' || syncStatus === 'start'
                         }}
                     >
                         { parseInt(syncedProducts) > 0 && <p>Synced products: <b>{syncedProducts}</b></p> }
-                        { syncPercentage > 0 && <ProgressBar progress={syncPercentage} tone="success" size="small" /> }
+                        { parseInt(syncedProducts) > 0 && <ProgressBar progress={syncPercentage} tone="success" size="small" /> }
                     </CalloutCard>
                 </Grid.Cell>
             </Grid>

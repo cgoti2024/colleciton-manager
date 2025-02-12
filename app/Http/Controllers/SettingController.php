@@ -22,7 +22,10 @@ class SettingController extends Controller
 
     public function startProductSync() {
         $shop = \Auth::user();
-        SyncProductsJob::dispatch($shop);
+        $status = getSetting($shop, 'PRODUCT_SYNC_PROCESS');
+        if (!$status || $status->value === 'failed') {
+            SyncProductsJob::dispatch($shop);
+        }
 
         return $this->sendSuccess('Product sync process started!');
     }

@@ -43,7 +43,7 @@ class SyncProductsJob implements ShouldQueue
             while ($hasNextPage) {
                 $fetchProductsQuery = <<<GRAPHQL
                     {
-                       products(first: 250, sortKey: TITLE {$this->buildCursorPart($cursor)}) {
+                       products(first: 10, sortKey: TITLE {$this->buildCursorPart($cursor)}) {
                         edges {
                             cursor
                             node {
@@ -100,7 +100,7 @@ class SyncProductsJob implements ShouldQueue
                     $cursor = $products[count($products) - 1]['cursor'] ?? null;
                     $this->insertProductInDB($response, $this->shop->id);
                     sleep(1);
-                    saveSetting($this->shop, 'SYNCED_PRODUCT_COUNT', ($mainIndex+1)*250);
+                    saveSetting($this->shop, 'SYNCED_PRODUCT_COUNT', ($mainIndex+1)*count($products));
                 } else {
                     info('there is error for retrieving products for mainindex => '.$mainIndex);
                 }

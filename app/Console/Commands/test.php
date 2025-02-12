@@ -178,18 +178,18 @@ class test extends Command
     protected function createCollection($user) {
         $names = ['test15', 'test2', 'test3', 'test4', 'test11', 'test21', 'test31', 'test41', 'test12', 'test22', 'test32', 'test42'];
         foreach ($names as $n) {
-            $input = [
-                'custom_collection' => [
-                    'title' => $n,
-                    'collects' => [
-                        ['product_id' => 8873196650740],
-                        ['product_id' => 8873196585204],
-                        ['product_id' => 8873196749044],
+                $input = [
+                    'custom_collection' => [
+                        'title' => $n,
+                        'collects' => [
+                            ['product_id' => 8873196650740],
+                            ['product_id' => 8873196585204],
+                            ['product_id' => 8873196749044],
+                        ],
                     ],
-                ],
-            ];
+                ];
 
-            $response = $user->api()->rest('POST', '/admin/custom_collections.json', $input);
+                $response = $user->api()->rest('POST', '/admin/custom_collections.json', $input);
         }
     }
 }

@@ -22,7 +22,10 @@ import {
     BlockStack,
     Divider,
     Grid,
-    Box
+    Box,
+    Toast,
+    Frame,
+    InlineError
 } from '@shopify/polaris';
 import React, {useEffect, useState, useCallback} from "react";
 import {
@@ -33,10 +36,16 @@ function Table() {
     const [items, setItems] = useState([])
     const [loading, setLoading] = useState([])
     const [currentPage, setCurrentPage] = useState(1);
+    const [totalProductCount, setTotalProductCount] = useState(0);
     const [pageInfo, setPageInfo] = useState(null);
     const [textFieldValue, setTextFieldValue] = useState('');
     const [selected, setSelected] = useState('all');
     const [active, setActive] = useState(false);
+    const [toastActive, setToastActive] = useState(false);
+    const [totalProductConfirm, setTotalProductConfirm] = useState(false);
+    const [toggleToastMessage, setToggleToastMessage] = useState(false);
+    const { selectedResources, allResourcesSelected, handleSelectionChange } = useIndexResourceState(items);
+
     const [newCollection, setNewCollection] = useState({
         title: '',
         description: '',
@@ -44,8 +53,14 @@ function Table() {
     });
 
     const handleChange = () => {
-        setActive(!active);
-        handleSelectedProducts()
+        const selectedProducts = items.filter((item) => selectedResources.includes(item.id));
+        if (selectedProducts.length === 0) {
+            setToastActive(true);
+        } else {
+            setActive(!active);
+            setTotalProductConfirm(false)
+            handleSelectedProducts();
+        }
     };
 
     const handleSelectChange = (value) => {
@@ -76,6 +91,7 @@ function Table() {
             setItems(res.data.data)
             setCurrentPage(res.data.meta.current_page);
             setPageInfo(res.data.meta);
+            setTotalProductCount(res.data.meta.total)
         }).catch((err) => {
             console.log(err)
         }).finally(() => {
@@ -112,8 +128,6 @@ function Table() {
         return endIndex > (pageInfo?.total || 0) ? (pageInfo?.total || 0) : endIndex;
     };
 
-    const { selectedResources, allResourcesSelected, handleSelectionChange } =
-        useIndexResourceState(items);
 
 
     const handleSelectedProducts = () => {
@@ -154,16 +168,21 @@ function Table() {
             params['type'] = selected;
         }
         console.log(params, 'params')
-        await axios.post('/api/create-collections', params)
-            .then((res) => {
-                console.log(res, 'res')
-            }).catch((err) => {
-                console.log(err)
-            }).finally(() => {
-                setActive(false)
-            })
-    };
+        try {
+            const res = await axios.post('/api/create-collections', params);
+            console.log(res, 'res');
 
+        } catch (err) {
+            console.log(err.response.data.message);
+            setToggleToastMessage({ message: err.response.data.message, error: true });
+
+        } finally {
+            setActive(false);
+        }
+    };
+    const toastMarkup = toastActive ? (
+        <Toast content="Please select a product" error onDismiss={() => setToastActive(false)} duration={3000}/>
+    ) : null;
 
     const rowMarkup = items.map(
         (
@@ -202,6 +221,8 @@ function Table() {
     );
 
     return (
+        <Frame>
+
         <Page
             title="Products"
             fullWidth
@@ -234,6 +255,15 @@ function Table() {
                         <Grid.Cell columnSpan={{ xs: 6, sm: 6, md: 6, lg: 4, xl: 4 }}>
                             <div style={{ display: "flex", justifyContent: "end",alignItems:"center",height:"100%" }}>
                                 <Button onClick={handleChange}>Create Manual Collection</Button>
+                                {toastMarkup}
+                                {toggleToastMessage && (
+                                    <Toast
+                                        content={toggleToastMessage.message}
+                                        error={toggleToastMessage.error}
+                                        onDismiss={() => setToggleToastMessage(null)}
+                                        duration={3000}
+                                    />
+                                )}
                             </div>
                         </Grid.Cell>
 
@@ -247,6 +277,7 @@ function Table() {
                 primaryAction={{
                     content: 'Create Manual Collection',
                     onAction: handleCollectionCreate,
+                    disabled:!totalProductConfirm
                 }}
                 title="Create Manual Collection"
             >
@@ -267,11 +298,22 @@ function Table() {
                         autoComplete="off"
                     />
 
-                    <div style={{"marginTop":"10px"}}>
+                    <div style={{ "marginTop": "10px" }}>
                         <Layout>
                             <Layout.Section variant="oneThird">
                                 <LegacyCard title="Selected Products" sectioned>
-                                    <p>{newCollection.products.length ? `${newCollection.products.length} ${newCollection.products.length > 1 ? 'products' : 'product'} selected` :  "No products selected"}</p>
+                                    <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                                        <p>
+                                            {
+                                                allResourcesSelected
+                                                    ? `${totalProductCount} products selected`
+                                                    : newCollection.products.length
+                                                    ? `${newCollection.products.length} ${newCollection.products.length > 1 ? 'products' : 'product'} selected`
+                                                    : "No products selected"
+                                            }
+                                        </p>
+                                        <Button onClick={() => setTotalProductConfirm(!totalProductConfirm)} disabled={totalProductConfirm}>{totalProductConfirm ? "Confirmed" : "Confirm"}</Button>
+                                    </div>
                                 </LegacyCard>
                             </Layout.Section>
                         </Layout>
@@ -337,6 +379,7 @@ function Table() {
                 }
             </LegacyCard>
         </Page>
+        </Frame>
     );
 }
 

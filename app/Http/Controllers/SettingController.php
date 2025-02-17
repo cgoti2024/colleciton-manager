@@ -26,7 +26,14 @@ class SettingController extends Controller
         if (!$status || $status->value === 'failed') {
             SyncProductsJob::dispatch($shop);
         }
+        $productSyncStatus = getSetting($shop, 'PRODUCT_SYNC_PROCESS');
+        $syncedProducts = getSetting($shop, 'SYNCED_PRODUCT_COUNT');
+        $totalProducts = getSetting($shop, 'TOTAL_PRODUCT_COUNTS');
 
-        return $this->sendSuccess('Product sync process started!');
+        return $this->sendResponse([
+            'productSyncStatus' => @$productSyncStatus->value,
+            'syncedProducts'    => @$syncedProducts->value,
+            'totalProducts'     => @$totalProducts->value
+        ]);
     }
 }

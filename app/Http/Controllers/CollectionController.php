@@ -31,7 +31,7 @@ class CollectionController extends Controller
         ]);
 
         $shop = \Auth::user();
-        $response = $this->collectionRepo->createCollection($validated, $shop);
+        $response = $this->collectionRepo->createCollection($request->all(), $shop);
 
         if ($response) return $this->sendSuccess('Collection created successfully!');
         else return $this->sendError('Something went wrong');

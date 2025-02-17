@@ -24,7 +24,6 @@ function Table() {
     const getOrders = async () => {
         setLoading(true)
         await axios.get('/api/collections?page='+currentPage).then((res) => {
-            console.log(res, 'res')
             setItems(res.data.data)
             setCurrentPage(res.data.meta.current_page);
             setPageInfo(res.data.meta);
@@ -80,7 +79,7 @@ function Table() {
 
     const rowMarkup = items.map(
         (
-            {id, order_number, total_price, currency, customer_name, financial_status, fulfillment_status, order_items, order_date,title},
+            {id, published_at,title},
             index,
         ) => (
             <IndexTable.Row id={id} key={id + '-' + index} position={index}>
@@ -90,7 +89,7 @@ function Table() {
                     </Text>
                 </IndexTable.Cell>
                 <IndexTable.Cell alignment="end">
-                    {moment(order_date).format('MMM DD YYYY')}
+                    {moment(published_at).format('MMM DD YYYY')}
                 </IndexTable.Cell>
             </IndexTable.Row>
         ),
@@ -106,7 +105,7 @@ function Table() {
 
     return (
         <Page
-            title="Collections"
+            title="Manual Collections"
             fullWidth
         >
             <LegacyCard>

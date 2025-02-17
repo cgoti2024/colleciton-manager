@@ -41,6 +41,7 @@ function Table() {
     const [textFieldValue, setTextFieldValue] = useState('');
     const [selected, setSelected] = useState('all');
     const [active, setActive] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
     const [toastActive, setToastActive] = useState(false);
     const [totalProductConfirm, setTotalProductConfirm] = useState(false);
     const [toggleToastMessage, setToggleToastMessage] = useState(false);
@@ -157,6 +158,7 @@ function Table() {
     };
 
     const handleCollectionCreate = async () => {
+        setIsCreating(true);
         let params = {
             'title' : newCollection?.title,
             'description' : newCollection?.description,
@@ -167,17 +169,15 @@ function Table() {
             params['query'] = textFieldValue;
             params['type'] = selected;
         }
-        console.log(params, 'params')
         try {
             const res = await axios.post('/api/create-collections', params);
-            console.log(res, 'res');
-
+            setToggleToastMessage({ message: 'Collection created successfully!', error: false });
         } catch (err) {
             console.log(err.response.data.message);
             setToggleToastMessage({ message: err.response.data.message, error: true });
-
         } finally {
             setActive(false);
+            setIsCreating(false);
         }
     };
     const toastMarkup = toastActive ? (
@@ -277,7 +277,8 @@ function Table() {
                 primaryAction={{
                     content: 'Create Manual Collection',
                     onAction: handleCollectionCreate,
-                    disabled:!totalProductConfirm
+                    disabled:!totalProductConfirm,
+                    loading:isCreating
                 }}
                 title="Create Manual Collection"
             >

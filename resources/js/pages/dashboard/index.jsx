@@ -31,6 +31,7 @@ function Dashboard() {
     }
 
     const getProductSyncStatus = async () => {
+        console.log('inside')
         await axios.get('/api/sync-product-status').then((res) => {
             setTotalProducts(res.data?.data?.totalProducts);
             setSyncStatus(res.data?.data?.productSyncStatus);
@@ -38,7 +39,7 @@ function Dashboard() {
             let syncPd = parseInt(res.data?.data?.syncedProducts)
             let totalPd = parseInt(res.data?.data?.totalProducts)
             if (totalPd > 0) {
-                setSyncPercentage(syncPd > totalPd ? ((syncPd / totalPd) * 100) : 100);
+                setSyncPercentage(syncPd < totalPd ? ((syncPd / totalPd) * 100) : 100);
             } else {
                 setSyncPercentage(0);
             }
@@ -65,7 +66,9 @@ function Dashboard() {
             setTotalProducts(res.data?.data?.totalProducts);
             setSyncStatus(res.data?.data?.productSyncStatus);
             setSyncedProducts(res.data?.data?.syncedProducts);
+            console.log(res.data?.data?.totalProducts, 'total prdoucts')
             if (res.data?.data?.totalProducts) {
+                getProductSyncStatus();
                 startProductSync();
             } else {
                 setSyncPercentage(0);
@@ -88,7 +91,7 @@ function Dashboard() {
                         }}
                     >
                         <Text variant="headingMd" as="h1">
-                            {items.products}
+                            {syncedProducts < items.products ? syncedProducts : items.products}
                         </Text>
                     </CalloutCard>
                 </Grid.Cell>
@@ -116,8 +119,8 @@ function Dashboard() {
                             disabled: syncStatus === 'end' || syncStatus === 'start'
                         }}
                     >
-                        { parseInt(syncedProducts) > 0 && <p>Synced products: <b>{syncedProducts}</b></p> }
-                        { parseInt(syncedProducts) > 0 && <ProgressBar progress={syncPercentage} tone="success" size="small" /> }
+                        { parseInt(syncedProducts) > 0 && <p style={{margin: "8px 0"}}>Synced products: <b>{syncedProducts}</b></p> }
+                        { parseInt(syncedProducts) > 0 && <ProgressBar style={{margin: "6px 0"}} progress={syncPercentage} tone="success" size="small" /> }
                     </CalloutCard>
                 </Grid.Cell>
             </Grid>

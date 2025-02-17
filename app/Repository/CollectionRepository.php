@@ -35,9 +35,12 @@ class CollectionRepository implements CollectionRepositoryInterface
     }
 
     public function createCollection($payloadData, $shop) {
-        if ($payloadData['allSelected'] == 1) {
+        if (@$payloadData['allSelected'] == 1) {
             $productRepo = App::make(ProductRepositoryInterface::class);
             $productIds = $productRepo->filteredProducts($shop->id, $payloadData['query'], $payloadData['type'] , 'collection');
+            if ($productIds && $productIds->count()) {
+                $productIds = $productIds->toArray();
+            }
         } else {
             $productIds = $payloadData['products'];
         }

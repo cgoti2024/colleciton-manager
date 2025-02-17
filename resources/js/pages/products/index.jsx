@@ -204,7 +204,7 @@ function Table() {
                 <IndexTable.Cell>{supplier}</IndexTable.Cell>
                 <IndexTable.Cell>
                     <Badge tone={status === 'active' || status === 'ACTIVE' ? 'success' : ''}>
-                        {status}
+                        {status.replace('active', 'ACTIVE')}
                     </Badge>
                 </IndexTable.Cell>
                 <IndexTable.Cell>{first_variant.price}</IndexTable.Cell>

@@ -77,6 +77,7 @@ function Table() {
         { label: 'Supplier', value: 'supplier' },
         { label: 'Tags', value: 'tags' },
         { label: 'Product Type', value: 'product_type' },
+        { label: 'Metafields', value: 'metafields' },
         { label: 'All', value: 'all' },
     ];
 

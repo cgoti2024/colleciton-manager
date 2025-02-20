@@ -52,6 +52,18 @@ class ProductRepository implements ProductRepositoryInterface
                     $q->orWhere('product_type', 'like', "%".trim($keyword)."%");
                 }
             });
+        } elseif ($type === 'metafields') {
+            $products->where(function ($q) use ($keywords) {
+                foreach ($keywords as $keyword) {
+                    $q->orWhere('metafields', 'like', "%" . trim($keyword) . "%");
+                }
+            });
+        } elseif ($type === 'supplier') {
+            $products->where(function ($q) use ($keywords) {
+                foreach ($keywords as $keyword) {
+                    $q->orWhere('supplier', 'like', "%" . trim($keyword) . "%");
+                }
+            });
         } elseif ($type === 'all') {
             $products->where(function ($q) use ($keywords) {
                 foreach ($keywords as $i => $keyword) {

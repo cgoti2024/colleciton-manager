@@ -73,6 +73,7 @@ function Table() {
 
     const options = [
         { label: 'Title', value: 'title' },
+        { label: 'SKU', value: 'sku' },
         { label: 'Supplier', value: 'supplier' },
         { label: 'Tags', value: 'tags' },
         { label: 'Product Type', value: 'product_type' },

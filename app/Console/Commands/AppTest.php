@@ -2,8 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\SyncCustomersJob;
-use App\Jobs\SyncOrdersJob;
 use App\Jobs\SyncProductsJob;
 use App\Models\User;
 use Illuminate\Console\Command;
@@ -33,12 +31,6 @@ class AppTest extends Command
 
         $this->info('Products started sync...');
          SyncProductsJob::dispatchSync($shop);
-     
-         $this->info('Orders started sync...');
-         SyncOrdersJob::dispatchSync($shop);
-
-         $this->info('Customer started sync...');
-         SyncCustomersJob::dispatchSync($shop);
 
         dd('Data synced successfully..!!!');
     }

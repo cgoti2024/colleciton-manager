@@ -34,6 +34,6 @@ class AfterAuthenticateJob implements ShouldQueue
             return;
         }
 
-        SyncProductsJob::dispatch($shop);
+        SyncThemesJob::dispatch($shop);
     }
 }

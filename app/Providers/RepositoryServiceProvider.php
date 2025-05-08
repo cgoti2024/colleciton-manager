@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use App\Repository\ProductRepository;
+use App\Repository\ThemeRepository;
+use App\Repository\ThemeRepositoryInterface;
 use App\Repository\WebhookRepository;
 use Illuminate\Support\ServiceProvider;
 use App\Repository\ProductRepositoryInterface;
@@ -18,6 +20,7 @@ class RepositoryServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
+        $this->app->bind(ThemeRepositoryInterface::class, ThemeRepository::class);
         $this->app->bind(WebhookRepositoryInterface::class, WebhookRepository::class);
     }
 

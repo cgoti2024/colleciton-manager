@@ -10,7 +10,7 @@ use Osiset\ShopifyApp\Contracts\ShopModel as IShopModel;
 use Osiset\ShopifyApp\Traits\ShopModel;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $name
@@ -92,5 +92,10 @@ class User extends Authenticatable implements IShopModel
             'email_verified_at' => 'datetime',
            // 'password' => 'hashed',
         ];
+    }
+
+    public function themes()
+    {
+        return $this->hasMany(Theme::class);
     }
 }

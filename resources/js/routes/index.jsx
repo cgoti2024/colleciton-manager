@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 
-import Products from "../pages/products"
+import Themes from "../pages/themes"
 import Dashboard from "../pages/dashboard"
 
 const routes = [
@@ -13,10 +13,10 @@ const routes = [
         }
     },
     {
-        path: '/products',
+        path: '/themes',
         exact: true,
         page: {
-            component: Products,
+            component: Themes,
             title: 'Products',
         }
     }

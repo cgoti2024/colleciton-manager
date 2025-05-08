@@ -3,15 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Theme;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $products = Product::count();
+        $themes = Theme::ofShop(AuthId())->count();
 
         return $this->sendResponse([
-           'products' => $products
+           'themes' => $themes
         ]);
     }
 }

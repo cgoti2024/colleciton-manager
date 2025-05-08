@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\SyncProductsJob;
+use App\Jobs\SyncThemesJob;
 use App\Models\User;
 use Illuminate\Console\Command;
 
@@ -13,7 +14,7 @@ class AppTest extends Command
      *
      * @var string
      */
-    protected $signature = 'app-test';
+    protected $signature = 'test';
 
     /**
      * The console command description.
@@ -29,8 +30,8 @@ class AppTest extends Command
     {
         $shop = User::first();
 
-        $this->info('Products started sync...');
-         SyncProductsJob::dispatchSync($shop);
+        $this->info('Themes started sync...');
+         SyncThemesJob::dispatchSync($shop);
 
         dd('Data synced successfully..!!!');
     }

@@ -16,19 +16,19 @@ function Table() {
     const [pageInfo, setPageInfo] = useState(null);
 
     const resourceName = {
-        singular: 'Product',
-        plural: 'Products',
+        singular: 'Theme',
+        plural: 'Themes',
     };
 
     const getProducts = async () => {
         setLoading(true)
-        await axios.get('/api/products?page='+currentPage).then((res) => {
+        await axios.get('/api/themes?page='+currentPage).then((res) => {
             console.log(res, 'res')
             setItems(res.data.data)
             setCurrentPage(res.data.meta.current_page);
             setPageInfo(res.data.meta);
         }).catch((err) => {
-            console.log(err)
+            console.log(err.response)
         }).finally(() => {
             setLoading(false)
         })
@@ -65,35 +65,32 @@ function Table() {
 
     const rowMarkup = items.map(
         (
-            {id, title, status, image_url, first_variant, supplier },
+            {id, name, role, has_file },
             index,
         ) => (
             <IndexTable.Row id={id} key={id + '-' + index} position={index}>
                 <IndexTable.Cell>
-                    <InlineStack wrap={false} blockAlign={"center"} gap="500">
-                        <Thumbnail
-                            source={image_url}
-                            alt={title}
-                        />
-                        <Text variant="bodyMd" as="span">
-                            {title}
-                        </Text>
-                    </InlineStack>
+                    <Text variant="bodyMd" as="span">
+                        {name}
+                    </Text>
                 </IndexTable.Cell>
-                <IndexTable.Cell>{supplier}</IndexTable.Cell>
                 <IndexTable.Cell>
-                    <Badge tone={status === 'active' ? 'success' : ''}>
-                        {status}
+                    <Badge tone={role === 'main' ? 'success' : ''}>
+                        {role}
                     </Badge>
                 </IndexTable.Cell>
-                <IndexTable.Cell>{first_variant.price}</IndexTable.Cell>
+                <IndexTable.Cell>
+                    <Badge tone={has_file === 'active' ? 'success' : ''}>
+                        {has_file ? 'File added' : 'NA'}
+                    </Badge>
+                </IndexTable.Cell>
             </IndexTable.Row>
         ),
     );
 
     const emptyStateMarkup = (
         <EmptyState
-            heading={`No products available`}
+            heading={`No themes available`}
         >
             <img src="/images/empty.jpg" alt="empty records" width={250}/>
         </EmptyState>
@@ -101,7 +98,7 @@ function Table() {
 
     return (
         <Page
-            title="Products"
+            title="Themes"
             fullWidth
         >
             <LegacyCard>
@@ -110,10 +107,9 @@ function Table() {
                     resourceName={resourceName}
                     itemCount={items.length}
                     headings={[
-                        {title: 'Product'},
-                        {title: 'Supplier'},
-                        {title: 'Status'},
-                        {title: 'Price'},
+                        {title: 'Theme'},
+                        {title: 'Role'},
+                        {title: 'Has file?'}
                     ]}
                     selectable={false}
                     emptyState={!loading && emptyStateMarkup}

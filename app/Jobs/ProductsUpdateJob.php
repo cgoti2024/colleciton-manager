@@ -52,16 +52,16 @@ class ProductsUpdateJob implements ShouldQueue
         $shop = User::where('name',$this->shopDomain)->first();
 
         if(empty($shop)) {
-            info('Shop Not Found in OrderCreateJob: '.$this->shopDomain);
+            info('Shop Not Found in ProductCreateJob: '.$this->shopDomain);
             return response(true, 200);
         }
 
-        $order = json_encode($this->data);
-        $shopifyId = json_decode($order)->id;
+        $product = json_encode($this->data);
+        $shopifyId = json_decode($product)->id;
 
         $entity = Webhook::updateOrCreate(
             ['shopify_id' => $shopifyId, 'topic' => 'products/update', 'shop_id' => $shop->id],
-            ['shopify_id' => $shopifyId, 'topic' => 'products/update', 'shop_id' => $shop->id, 'data' => $order, 'is_executed' => 0]
+            ['shopify_id' => $shopifyId, 'topic' => 'products/update', 'shop_id' => $shop->id, 'data' => $product, 'is_executed' => 0]
         );
 
         ExecuteProductsJob::dispatch($entity->id);
